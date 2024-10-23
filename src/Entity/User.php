@@ -3,39 +3,39 @@
 namespace App\Entity;
 
 use App\Entity\Enum\Roles;
+use App\Entity\Utils\BaseEntity;
 use App\Repository\UserRepository;
-use DateTime;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Constraints\Email;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[UniqueEntity('email')]
-class User
+class User extends BaseEntity
 {
-    #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column]
-    private int $id;
+    public function __construct()
+    {
+        $this->assignedTickets = new ArrayCollection();
+    }
 
     #[ORM\Column(length: 255, unique: true, nullable: false)]
-    #[Assert\Email]
+    #[Assert\Email(
+        mode: Email::VALIDATION_MODE_STRICT
+    )]
     private string $email;
 
     #[ORM\Column(length: 255, nullable: false)]
-    private ?string $password;
+    private string $password;
 
     #[ORM\Column(length: 255, enumType: Roles::class)]
     private Roles $role = Roles::USER;
 
-    #[ORM\Column(name: 'created_at', nullable: true)]
-    #[Assert\DateTime]
-    private \DateTimeImmutable $createdAt;
+    #[ORM\OneToMany(targetEntity: Ticket::class, mappedBy: 'assignedTo')]
+    private Collection $assignedTickets;
 
-    public function getId(): int
-    {
-        return $this->id;
-    }
 
     public function getEmail(): string
     {
@@ -73,15 +73,8 @@ class User
         return $this;
     }
 
-    public function getCreatedAt(): \DateTimeImmutable
+    public function getAssignedTickets(): Collection
     {
-        return $this->createdAt;
-    }
-
-    public function setCreatedAt(\DateTimeImmutable $createdAt): static
-    {
-        $this->createdAt = $createdAt;
-
-        return $this;
+        return $this->assignedTickets;
     }
 }
