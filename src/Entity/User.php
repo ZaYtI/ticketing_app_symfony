@@ -33,8 +33,8 @@ class User extends BaseEntity implements UserInterface, \Symfony\Component\Secur
     #[ORM\Column(length: 255, nullable: false)]
     private string $password;
 
-    #[ORM\Column()]
-    private ?array $role = [];
+    #[ORM\Column(length: 255, type: 'json')]
+    private array $roles = [Roles::USER];
 
     #[ORM\OneToMany(targetEntity: Ticket::class, mappedBy: 'assignedTo')]
     private Collection $tickets;
@@ -67,11 +67,9 @@ class User extends BaseEntity implements UserInterface, \Symfony\Component\Secur
         return $this;
     }
 
-    public function setRole(array $role): self
+    public function getRole(): array
     {
-        $this->role = $role;
-
-        return $this;
+        return $this->roles;
     }
 
     public function getTickets(): Collection
