@@ -63,13 +63,6 @@ class User extends BaseEntity implements UserInterface, \Symfony\Component\Secur
         return $this;
     }
 
-    public function getRole(): array
-    {
-        $roles = $this->role;
-        $roles[] = 'ROLE_USER';
-        return array_unique($roles);
-    }
-
     public function setRole(array $role): self
     {
         $this->role = $role;
@@ -83,7 +76,9 @@ class User extends BaseEntity implements UserInterface, \Symfony\Component\Secur
 
     public function getRoles(): array
     {
-        return [$this->role];
+        $roles = $this->role;
+        $roles[] = 'ROLE_USER';
+        return array_unique($roles);
     }
 
     public function eraseCredentials(): void
