@@ -10,12 +10,13 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Constraints\Email;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[UniqueEntity('email')]
-class User extends BaseEntity implements UserInterface, \Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface
+class User extends BaseEntity implements UserInterface, PasswordAuthenticatedUserInterface
 {
     public function __construct()
     {
@@ -24,13 +25,13 @@ class User extends BaseEntity implements UserInterface, \Symfony\Component\Secur
         $this->projects = new ArrayCollection();
     }
 
-    #[ORM\Column(length: 255, unique: true, nullable: false)]
+    #[ORM\Column(type: 'string', length: 255, unique: true, nullable: false)]
     #[Assert\Email(
         mode: Email::VALIDATION_MODE_STRICT
     )]
     private string $email;
 
-    #[ORM\Column(length: 255, nullable: false)]
+    #[ORM\Column(type: 'string', length: 255, nullable: false)]
     private string $password;
 
     #[ORM\Column(length: 255, type: 'json')]
@@ -42,6 +43,22 @@ class User extends BaseEntity implements UserInterface, \Symfony\Component\Secur
     #[ORM\ManyToMany(targetEntity: Project::class, inversedBy: 'users')]
     private Collection $projects;
 
+    #[ORM\Column]
+    private bool $isVerified = false;
+
+    public function getUserIdentifier(): string
+    {
+        return (string) $this->email;
+    }
+
+    /**
+     * @see UserInterface
+     */
+    public function eraseCredentials(): void
+    {
+        // If you store any temporary, sensitive data on the user, clear it here
+        // $this->plainPassword = null;
+    }
 
     public function getEmail(): string
     {
@@ -55,6 +72,9 @@ class User extends BaseEntity implements UserInterface, \Symfony\Component\Secur
         return $this;
     }
 
+    /**
+     * @see PasswordAuthenticatedUserInterface
+     */
     public function getPassword(): string
     {
         return $this->password;
@@ -67,9 +87,9 @@ class User extends BaseEntity implements UserInterface, \Symfony\Component\Secur
         return $this;
     }
 
-    public function getRole(): array
+    public function getRoles(): array
     {
-        return $this->roles;
+        return array_unique($this->roles);
     }
 
     public function getTickets(): Collection
@@ -82,20 +102,15 @@ class User extends BaseEntity implements UserInterface, \Symfony\Component\Secur
         return $this->projects;
     }
 
-    public function getRoles(): array
+    public function isVerified(): bool
     {
-        $roles = $this->role;
-        $roles[] = 'ROLE_USER';
-        return array_unique($roles);
+        return $this->isVerified;
     }
 
-    public function eraseCredentials(): void
+    public function setVerified(bool $isVerified): static
     {
-        // TODO: Implement eraseCredentials() method.
-    }
+        $this->isVerified = $isVerified;
 
-    public function getUserIdentifier(): string
-    {
-        return (string) $this->email;
+        return $this;
     }
 }

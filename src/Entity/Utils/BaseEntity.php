@@ -20,13 +20,11 @@ abstract class BaseEntity
     #[ORM\Column]
     protected int $id;
 
-    #[ORM\Column(name: 'created_at', nullable: false)]
-    #[Assert\DateTime]
-    protected \DateTime $createdAt;
+    #[ORM\Column(name: 'created_at', nullable: false, type: 'datetime')]
+    protected \DateTimeInterface $createdAt;
 
-    #[ORM\Column(name: 'updated_at', nullable: false)]
-    #[Assert\DateTime]
-    protected \DateTime $updatedAt;
+    #[ORM\Column(name: 'updated_at', nullable: false, type: 'datetime')]
+    protected \DateTimeInterface $updatedAt;
 
     public function getId(): int
     {
