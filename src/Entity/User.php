@@ -9,15 +9,17 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Constraints\Email;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[UniqueEntity('email')]
-class User extends BaseEntity
+class User extends BaseEntity implements UserInterface, \Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface
 {
     public function __construct()
     {
+        parent::__construct();
         $this->assignedTickets = new ArrayCollection();
     }
 
@@ -30,8 +32,8 @@ class User extends BaseEntity
     #[ORM\Column(length: 255, nullable: false)]
     private string $password;
 
-    #[ORM\Column(length: 255, enumType: Roles::class)]
-    private Roles $role = Roles::USER;
+    #[ORM\Column()]
+    private ?array $role = [];
 
     #[ORM\OneToMany(targetEntity: Ticket::class, mappedBy: 'assignedTo')]
     private Collection $assignedTickets;
@@ -61,20 +63,36 @@ class User extends BaseEntity
         return $this;
     }
 
-    public function getRole(): Roles
+    public function getRole(): array
     {
-        return $this->role;
+        $roles = $this->role;
+        $roles[] = 'ROLE_USER';
+        return array_unique($roles);
     }
 
-    public function setRole(string $role): static
+    public function setRole(array $role): self
     {
         $this->role = $role;
-
         return $this;
     }
 
     public function getAssignedTickets(): Collection
     {
         return $this->assignedTickets;
+    }
+
+    public function getRoles(): array
+    {
+        return [$this->role];
+    }
+
+    public function eraseCredentials(): void
+    {
+        // TODO: Implement eraseCredentials() method.
+    }
+
+    public function getUserIdentifier(): string
+    {
+        return (string) $this->email;
     }
 }

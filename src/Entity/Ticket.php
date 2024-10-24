@@ -15,6 +15,7 @@ class Ticket extends BaseEntity
 {
     public function __construct()
     {
+        parent::__construct();
         $this->createdAt = new \DateTime();
         $this->updatedAt = new \DateTime();
     }
