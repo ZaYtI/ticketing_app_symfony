@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Entity\Enum\Priority;
+use App\Entity\Enum\Status;
 use App\Entity\Utils\BaseEntity;
 use App\Repository\TicketRepository;
 use Doctrine\Common\Collections\Collection;
@@ -23,6 +24,9 @@ class Ticket extends BaseEntity
 
     #[ORM\Column(length: 255)]
     private ?string $description = null;
+
+    #[ORM\Column(type: "string", length: 255, enumType: Status::class, nullable: false)]
+    private Status $status;
 
     #[ORM\Column(type: "string", length: 255, enumType: Priority::class, nullable: false)]
     private Priority $priority;
@@ -100,5 +104,17 @@ class Ticket extends BaseEntity
     public function getStatusHistory(): Collection
     {
         return $this->statusHistory;
+    }
+
+    public function  getStatus(): Status
+    {
+        return $this->status;
+    }
+
+    public function setStatus(Status $status): static
+    {
+        $this->status = $status;
+
+        return $this;
     }
 }
