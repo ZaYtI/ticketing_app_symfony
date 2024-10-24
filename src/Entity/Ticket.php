@@ -39,7 +39,7 @@ class Ticket extends BaseEntity
     private ?\DateTime $deadLine;
 
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'tickets')]
-    #[ORM\JoinColumn(name: 'assign_user_id')]
+    #[ORM\JoinColumn(name: 'assign_user_id', nullable: true)]
     private ?User $assignedTo;
 
     #[ORM\OneToMany(targetEntity: TicketStatusHistory::class, mappedBy: 'ticket')]
