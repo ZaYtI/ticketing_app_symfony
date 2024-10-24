@@ -17,10 +17,11 @@ class TicketStatusHistory extends BaseEntity
 
     public function __construct()
     {
+        parent::__construct();
         $this->changeAt = new \DateTime();
     }
 
-    #[ORM\Column(type: "string", length: 255, enumType: Status::class, nullable: false)]
+    #[ORM\Column(type: "string", length: 255, nullable: false, enumType: Status::class)]
     private Status $status = Status::OPEN;
 
     #[ORM\ManyToOne(targetEntity: Ticket::class, inversedBy: 'statusHistory')]
