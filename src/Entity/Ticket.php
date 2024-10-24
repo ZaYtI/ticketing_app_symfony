@@ -6,6 +6,7 @@ use App\Entity\Enum\Priority;
 use App\Entity\Enum\Status;
 use App\Entity\Utils\BaseEntity;
 use App\Repository\TicketRepository;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -18,6 +19,7 @@ class Ticket extends BaseEntity
         parent::__construct();
         $this->createdAt = new \DateTime();
         $this->updatedAt = new \DateTime();
+        $this->statusHistory = new ArrayCollection();
     }
 
     #[ORM\Column(length: 255, nullable: false)]
@@ -36,11 +38,15 @@ class Ticket extends BaseEntity
     #[Assert\DateTime]
     private ?\DateTime $deadLine;
 
-    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'assignedTickets')]
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'tickets')]
+    #[ORM\JoinColumn(name: 'assign_user_id')]
     private ?User $assignedTo;
 
     #[ORM\OneToMany(targetEntity: TicketStatusHistory::class, mappedBy: 'ticket')]
     private Collection $statusHistory;
+
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'tickets')]
+    private Project $project;
 
     public function getTitle(): ?string
     {
@@ -117,5 +123,10 @@ class Ticket extends BaseEntity
         $this->status = $status;
 
         return $this;
+    }
+
+    public function getProject(): Project
+    {
+        return $this->project;
     }
 }
