@@ -56,8 +56,7 @@ class User extends BaseEntity implements UserInterface, PasswordAuthenticatedUse
      */
     public function eraseCredentials(): void
     {
-        // If you store any temporary, sensitive data on the user, clear it here
-        // $this->plainPassword = null;
+        // Implemtents method if you store any temporary, sensitive data on the user, clear it here
     }
 
     public function getEmail(): string
