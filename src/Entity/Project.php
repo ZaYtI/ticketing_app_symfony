@@ -14,6 +14,7 @@ class Project extends BaseEntity
 
     public function __construct()
     {
+        parent::__construct();
         $this->users = new ArrayCollection();
         $this->tickets = new ArrayCollection();
     }

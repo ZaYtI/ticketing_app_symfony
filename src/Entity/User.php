@@ -20,7 +20,6 @@ class User extends BaseEntity implements UserInterface, \Symfony\Component\Secur
     public function __construct()
     {
         parent::__construct();
-        $this->assignedTickets = new ArrayCollection();
         $this->tickets = new ArrayCollection();
         $this->projects = new ArrayCollection();
     }
