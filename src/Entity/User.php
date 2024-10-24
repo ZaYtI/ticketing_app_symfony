@@ -16,9 +16,11 @@ use Symfony\Component\Validator\Constraints\Email;
 #[UniqueEntity('email')]
 class User extends BaseEntity
 {
+
     public function __construct()
     {
-        $this->assignedTickets = new ArrayCollection();
+        $this->tickets = new ArrayCollection();
+        $this->projects = new ArrayCollection();
     }
 
     #[ORM\Column(length: 255, unique: true, nullable: false)]
@@ -34,7 +36,10 @@ class User extends BaseEntity
     private Roles $role = Roles::USER;
 
     #[ORM\OneToMany(targetEntity: Ticket::class, mappedBy: 'assignedTo')]
-    private Collection $assignedTickets;
+    private Collection $tickets;
+
+    #[ORM\ManyToMany(targetEntity: Project::class, inversedBy: 'users')]
+    private Collection $projects;
 
 
     public function getEmail(): string
@@ -73,8 +78,13 @@ class User extends BaseEntity
         return $this;
     }
 
-    public function getAssignedTickets(): Collection
+    public function getTickets(): Collection
     {
-        return $this->assignedTickets;
+        return $this->tickets;
+    }
+
+    public function getProjects(): Collection
+    {
+        return $this->projects;
     }
 }
